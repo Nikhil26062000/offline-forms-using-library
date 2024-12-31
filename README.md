@@ -1,3 +1,10 @@
+# Note :
+- In master -> Right now local forage library is deployed
+- master-clone-single-form-ls -> this branch has code in which using react query data is stored in local storage for single form
+- two-forms -> This branch has code in which we are using react-query to store data in multiple forms (Two forms) in local stoarge
+- local-forage-library -> this branch has code where using react-query + local forage to store data in indexedDB (for two forms)
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
