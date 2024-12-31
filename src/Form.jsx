@@ -1,38 +1,39 @@
 import React, { useState } from 'react';
 import { useMutation } from 'react-query';
+import localforage from 'localforage';
 
 const submitForm = async (formData) => {
-  // Retrieve the existing form submissions from localStorage
-  let offlineData = JSON.parse(localStorage.getItem('formData')) || [];
+  // Retrieve existing form submissions from localforage
+  let offlineData = (await localforage.getItem('formData')) || [];
 
   // Add the new formData to the offline data
   offlineData.push(formData);
 
-  // Save the updated offline data back to localStorage
-  localStorage.setItem('formData', JSON.stringify(offlineData));
+  // Save the updated offline data back to localforage
+  await localforage.setItem('formData', offlineData);
 
-  return { message: "Form data saved to localStorage" };
+  return { message: "Form data saved to localforage" };
 };
 
 const Form = () => {
   const [formData, setFormData] = useState({ name: '', email: '' });
 
   const { mutate } = useMutation(submitForm, {
-    onError: (error) => {
-      console.log('Error saving data to localStorage:', error);
-      // Handle error by saving data to localStorage
-      let offlineData = JSON.parse(localStorage.getItem('formData')) || [];
-      offlineData.push(formData);  // Push the latest formData
-      localStorage.setItem('formData', JSON.stringify(offlineData));
+    onError: async (error) => {
+      console.log('Error saving data to localforage:', error);
+      // Handle error by saving data to localforage
+      let offlineData = (await localforage.getItem('formData')) || [];
+      offlineData.push(formData); // Push the latest formData
+      await localforage.setItem('formData', offlineData);
     },
     onSuccess: async () => {
       // Try to sync all offline data when online
       try {
-        let offlineData = JSON.parse(localStorage.getItem('formData')) || [];
+        let offlineData = (await localforage.getItem('formData')) || [];
 
         if (offlineData.length > 0) {
           console.log('Syncing offline data to the server:', offlineData);
-          
+
           // Sync all offline data to the server at once (batch request)
           const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
             method: 'POST',
@@ -43,8 +44,8 @@ const Form = () => {
           });
 
           if (response.ok) {
-            // If the sync is successful, clear the offline data from localStorage
-            localStorage.removeItem('formData');
+            // If the sync is successful, clear the offline data from localforage
+            await localforage.removeItem('formData');
             console.log('All offline data synced to server');
           } else {
             console.log('Failed to sync data to server');
@@ -62,7 +63,7 @@ const Form = () => {
       name: e.target.name.value,
       email: e.target.email.value,
     };
-    
+
     // Update local state
     setFormData(formData);
 
