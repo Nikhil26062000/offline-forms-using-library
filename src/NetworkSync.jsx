@@ -129,6 +129,8 @@ const syncDataFromKey = async (key) => {
 
     if (offlineData.length > 0) {
       console.log(`Found unsynced data for ${key}. Attempting to sync:`, offlineData);
+      alert(`Found unsynced data for ${key}. Attempting to sync:`);
+      alert(JSON.stringify(offlineData,null,2))
 
       // Attempt to sync data to the server
       const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
@@ -141,16 +143,21 @@ const syncDataFromKey = async (key) => {
 
       if (response.ok) {
         console.log(`Successfully synced all data for ${key} to the server`);
+        alert(`Successfully synced all data for ${key} to the server`);
         // Clear synced data from LocalForage
         await localforage.removeItem(key);
+        alert(`Successfully synced all data for ${key} to the server and cleared from local forage.`);
       } else {
         console.log(`Failed to sync data for ${key} to server. Will retry later.`);
+        alert(`Failed to sync data for ${key} to server. Will retry later.`);
       }
     } else {
       console.log(`No unsynced data found for ${key}.`);
+      alert(`No unsynced data found for ${key}.`);
     }
   } catch (error) {
     console.error(`Error during sync for ${key}:`, error);
+    alert(`Error during sync for ${key}:`, error);
   }
 };
 

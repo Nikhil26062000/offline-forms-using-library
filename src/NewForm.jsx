@@ -11,6 +11,7 @@ const submitNewForm = async (formData) => {
 
   // Save the updated data back to LocalForage
   await localforage.setItem('newFormData', offlineData);
+  alert('Hurra..! New form data saved to localforage');
 
   return { message: "New form data saved to localforage" };
 };
@@ -21,6 +22,7 @@ const NewForm = () => {
   const { mutate } = useMutation(submitNewForm, {
     onError: async (error) => {
       console.log('Error saving new form data to localforage:', error);
+      alert('Error saving new form data to localforage:', error);
       // Handle error by saving data to LocalForage
       let offlineData = (await localforage.getItem('newFormData')) || [];
       offlineData.push(formData);
@@ -33,6 +35,7 @@ const NewForm = () => {
 
         if (offlineData.length > 0) {
           console.log('Syncing new form offline data to the server:', offlineData);
+          alert('Syncing new form offline data to the server:', offlineData);
 
           // Sync all offline data to the server in a batch
           const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
@@ -47,12 +50,16 @@ const NewForm = () => {
             // If sync is successful, clear the offline data
             await localforage.removeItem('newFormData');
             console.log('New form data synced successfully');
+            alert('New form data synced successfully');
+            alert('so New form data deleting from local forage');
           } else {
             console.log('Failed to sync new form data');
+            alert('Failed to sync new form data');
           }
         }
       } catch (error) {
         console.log('Error syncing new form offline data:', error);
+        alert('Error syncing new form offline data:', error);
       }
     },
   });
